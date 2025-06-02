@@ -35,15 +35,17 @@ class Account:
             return "Insufficient funds."
 
     def transfer_funds(self, amount, other_account):
+        if not isinstance(other_account, Account):
+            return f'incompatible recipient'
         if self.closed or self.frozen or other_account.closed or other_account.frozen:
             return "One of the accounts is not active."
         elif amount > 0 and self.balance - amount >= self.min_balance and other_account is not None:
             self.users.append(other_account)
             self.balance -= amount
-            self.withdrawals.append(amount)
+            self.withdraw(amount)
             other_account.balance += amount
-            other_account.deposits.append(amount)
-            return f"Transfer successful. {other_account.name} will recieve Ksh{amount}. Your new balance is {self.balance}"
+            other_account.deposit(amount)
+            return f"Transfer successful. {other_account.name} will recieve Ksh{amount}. Your new balance is {self.get_balance()}"
         else:
             return "Transfer failed due to insufficient funds or invalid amount."
 
@@ -127,3 +129,20 @@ class Account:
         self.withdrawals = []
         self.loan = 0
         return "Account has been closed and all data reset."
+
+
+class Account1:
+    def __init__(self, name):
+        self.name = name
+        self._balance = 0  #private
+        self.__number = 12 #protected
+
+    def check_balance(self):
+        return self._balance
+    
+    def set_balance(self, balance):
+        self._balance = balance
+
+    def __change_number(self, number):
+        self.__number = number
+        
